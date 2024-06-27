@@ -7,6 +7,7 @@ class Downtime {
   int operationID;
   DowntimeStatus downTimeStatus;
   int downTimeTypeID;
+  int downTimeReasonID;
   late String donwtimeTypeName;
   String downTimeReasonName;
   String? subDownTimeReasonName;
@@ -21,6 +22,7 @@ class Downtime {
     required this.operationID,
     required this.downTimeStatus,
     required this.downTimeTypeID,
+    required this.downTimeReasonID,
     required this.downTimeReasonName,
     required this.subDownTimeReasonName,
     required this.comment,
@@ -37,6 +39,7 @@ class Downtime {
         'OperationID': int operationID,
         'DownTimeStatus': int downTimeStatus,
         'DownTimeTypeID': int downTimeTypeID,
+        'DownTimeReasonID': int downTimeReasonID,
         'DownTimeReasonName': String downTimeReasonName,
         'SubDownTimeReasonName': String? subDownTimeReasonName,
         'Comment': String? comment,
@@ -50,6 +53,7 @@ class Downtime {
             operationID: operationID,
             downTimeStatus: DowntimeStatus.values[downTimeStatus],
             downTimeTypeID: downTimeTypeID,
+            downTimeReasonID: downTimeReasonID,
             downTimeReasonName: downTimeReasonName.trim(),
             subDownTimeReasonName: subDownTimeReasonName?.trim(),
             comment: comment?.trim()),

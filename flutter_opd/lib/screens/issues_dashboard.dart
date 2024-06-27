@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_opd/opd_appbar.dart';
+import 'package:flutter_opd/screens/comment_page.dart';
 import 'package:flutter_opd/screens/downtime_details_page.dart';
 import 'package:flutter_opd/states/downtime_state.dart';
 import 'package:flutter_opd/states/equipment_state.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_opd/widgets/dt_listtile.dart';
 import 'package:intl/intl.dart';
 import 'package:pet_common/datetime_helper.dart';
 import 'package:pet_data/downtime/downtime.dart';
+import 'package:pet_data/downtime/downtime_reason.dart';
 import 'package:pet_data/downtime/downtime_type.dart';
 import 'package:pet_data/equipment.dart';
 import 'package:pet_data/operation.dart';
@@ -53,10 +55,19 @@ class IssuesDashboard extends StatelessWidget {
           Map<int, Operation> operationMap =
               snapshot.data![1] as Map<int, Operation>;
           List<Downtime> downtimes = snapshot.data![2] as List<Downtime>;
-          downtimes = downtimes.where((x) => x.end == null).toList();
           Map<int, DowntimeType> downtimeTypes =
               (snapshot.data![3] as List<dynamic>)[0] as Map<int, DowntimeType>;
+          Map<int, DowntimeReason> downtimeReasons = (snapshot.data![3]
+              as List<dynamic>)[1] as Map<int, DowntimeReason>;
           List<Downtime> microDowntimes = snapshot.data![4] as List<Downtime>;
+          downtimes = downtimes
+              .where((x) =>
+                  x.downTimeReasonID !=
+                      microDowntimes.firstOrNull?.downTimeReasonID &&
+                  (downtimeReasons[x.downTimeReasonID]!
+                          .isDefaultDownTimeReason ||
+                      x.end == null))
+              .toList();
 
           return MaterialApp(
             home: Scaffold(
@@ -106,18 +117,18 @@ class IssuesDashboard extends StatelessWidget {
                                     dtType: downtimeTypes[dt.downTimeTypeID]!,
                                     onTap: microDTOnTap,
                                   )
-                                // DTCard(
-                                //   operation:
-                                //       operationMap[dt.operationID]!.name,
-                                //   dtType: downtimeTypes[dt.downTimeTypeID]!
-                                //       .downTimeTypeName,
-                                //   dtReason: dt.downTimeReasonName,
-                                //   dtSubReason: dt.subDownTimeReasonName,
-                                //   status: dt.downTimeStatus,
-                                //   duration: dt.duration(),
-                                //   takeActionTime: dt.resolvingTime,
-                                //   start: dt.start,
-                                // ),
+                              // DTCard(
+                              //   operation:
+                              //       operationMap[dt.operationID]!.name,
+                              //   dtType: downtimeTypes[dt.downTimeTypeID]!
+                              //       .downTimeTypeName,
+                              //   dtReason: dt.downTimeReasonName,
+                              //   dtSubReason: dt.subDownTimeReasonName,
+                              //   status: dt.downTimeStatus,
+                              //   duration: dt.duration(),
+                              //   takeActionTime: dt.resolvingTime,
+                              //   start: dt.start,
+                              // ),
                             ],
                           ),
                         ),
@@ -192,7 +203,15 @@ class IssuesDashboard extends StatelessWidget {
                           backgroundColor: Colors.grey,
                           minimumSize: const Size.fromWidth(100),
                           padding: const EdgeInsets.all(10)),
-                      onPressed: () {},
+                      onPressed: () {
+                        int totalSec = microDowntimes.fold(0, (sum, x) => sum + x.activeTime);
+                        String title = 'Total micro downtimes: ${microDowntimes.length} ($totalSec sec)';
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CommentPage(commentTitle: title,)),
+                        );
+                      },
                       icon: const Icon(Icons.comment),
                       label: const Text('Comment'),
                     ),

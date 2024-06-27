@@ -43,6 +43,7 @@ dependencies:
     path: ../pet_common
   pet_data:
     path: ../pet_data
+  virtual_keyboard_multi_language: ^1.0.3
 
 dev_dependencies:
   flutter_test:
