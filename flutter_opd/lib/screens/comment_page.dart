@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_opd/opd_appbar.dart';
+import 'package:flutter_opd/states/downtime_state.dart';
+import 'package:provider/provider.dart';
 import 'package:virtual_keyboard_multi_language/virtual_keyboard_multi_language.dart';
 
 class CommentPage extends StatefulWidget {
   final commentTitle;
 
-  CommentPage({super.key, required this.commentTitle});
+  const CommentPage({super.key, required this.commentTitle});
 
   @override
   _CommentPageState createState() => _CommentPageState();
@@ -25,7 +27,8 @@ class _CommentPageState extends State<CommentPage> {
 
   @override
   Widget build(BuildContext context) {
-// Just local variable. Use Text widget or similar to show in UI.
+    // Just local variable. Use Text widget or similar to show in UI.
+    var downtimeState = context.watch<DowntimesState>();
 
     /// Fired when the virtual keyboard key is pressed.
     onKeyPress(VirtualKeyboardKey key) {
@@ -60,22 +63,39 @@ class _CommentPageState extends State<CommentPage> {
       appBar: const OPDAppBar(title: 'Micro Downtimes'),
       body: Column(
         children: <Widget>[
-          Text(
-            widget.commentTitle,
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 16),
-          TextField(
-            controller: _controller,
-            maxLines: 3,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Comment required - minimum 10 characters ...',
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0, left: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.commentTitle,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
             ),
-            onChanged: _validateInput,
           ),
-          SizedBox(height: 16),
-          Spacer(),
+          const SizedBox(height: 16),
+          const Divider(height: 0,),
+          // SizedBox(height: 16),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                textAlignVertical: TextAlignVertical.top,
+                controller: _controller,
+                maxLines: null,
+                expands: true,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Comment required - minimum 10 characters ...',
+                ),
+                onChanged: _validateInput,
+              ),
+            ),
+          ),
+          // Spacer(),
           Container(
             // Keyboard is transparent
             color: Colors.grey[200],
@@ -100,14 +120,17 @@ class _CommentPageState extends State<CommentPage> {
             children: [
               TextButton(
                 style: TextButton.styleFrom(
-                  minimumSize: Size(64, 64),
-                  // backgroundColor: Colors.grey,
+                  minimumSize: const Size(64, 64),
+                  // backgroundColor: Colors.grey,33
                   foregroundColor: Colors.black,
-                  padding: EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(0),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   // Handle the button press
                   print('Comment submitted: ${_controller.text}');
+                  await downtimeState.commentMicroDowntimes(_controller.text);
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop();
                 },
                 child: const Text(
                   'Comment micro downtimes',

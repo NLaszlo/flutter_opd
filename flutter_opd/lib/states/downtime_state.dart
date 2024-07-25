@@ -35,6 +35,11 @@ class DowntimesState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void reloadDowntimes(){
+    downtimes = fetchDowntimes();
+    notifyListeners();
+  }
+
   Future<List<Downtime>> getUncommentedMicroDowntimes() {
     return fetchMicroDowntimes();
   }
@@ -42,10 +47,21 @@ class DowntimesState extends ChangeNotifier {
   Future getDowntimeDetails(int dtID) {
     return fetchDowntimeHistories(dtID);
   }
+
+  Future commentMicroDowntimes(String comment) async {
+    final uri = '$apiBaseURL/DownTimes/SetCommentsMicroStops/$comment/$equipmentID';
+
+    final response = await http.get(Uri.parse(uri));
+
+    if (response.statusCode < 200 && response.statusCode >= 300) {
+      // If the server did not return a 200 OK response, then throw an exception.
+      throw Exception('Failed to comment Micro Downtimes');
+    }
+  }
 }
 
 Future<List<Downtime>> fetchDowntimes() async {
-  final uri = '$apiBaseURL/DownTimes/AllDownTimesForLast24Hours/true/0/$equipmentID';
+  final uri = '$apiBaseURL/DownTimes/DownTimesForLast24Hours/true/0/$equipmentID';
 
   final response = await http.get(Uri.parse(uri));
 

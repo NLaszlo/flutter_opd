@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_opd/opd_appbar.dart';
 import 'package:flutter_opd/screens/comment_page.dart';
 import 'package:flutter_opd/screens/downtime_details_page.dart';
+import 'package:flutter_opd/screens/downtime_edit.dart';
+import 'package:flutter_opd/states/appstate.dart';
 import 'package:flutter_opd/states/downtime_state.dart';
 import 'package:flutter_opd/states/equipment_state.dart';
 import 'package:flutter_opd/widgets/dt_listtile.dart';
@@ -19,7 +21,7 @@ class IssuesDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // var appState = context.watch<AppState>();
+    var appState = context.watch<AppState>();
     var downtimeState = context.watch<DowntimesState>();
     var eqState = context.watch<EquipmentState>();
 
@@ -32,6 +34,7 @@ class IssuesDashboard extends StatelessWidget {
           downtimeState.getUncommentedMicroDowntimes()
         ]),
         builder: (context, snapshot) {
+          print('IssuesDashboard');
           if (snapshot.hasError) {
             return Scaffold(
                 appBar: const OPDAppBar(title: 'Error'),
@@ -39,6 +42,16 @@ class IssuesDashboard extends StatelessWidget {
           } else if (!snapshot.hasData) {
             return const Scaffold(
                 appBar: OPDAppBar(title: 'No equipment.'), body: Text(''));
+          }
+
+          void issueOnTap(downtimeID) {
+            // print('ontapped $downtimeID');
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      DowntimeEdit(downtimeID: downtimeID)),
+            );
           }
 
           void microDTOnTap(downtimeID) {
@@ -63,11 +76,13 @@ class IssuesDashboard extends StatelessWidget {
           downtimes = downtimes
               .where((x) =>
                   x.downTimeReasonID !=
-                      microDowntimes.firstOrNull?.downTimeReasonID &&
+                      appState.srvSettings['MicroReasonID'] as int &&
                   (downtimeReasons[x.downTimeReasonID]!
                           .isDefaultDownTimeReason ||
                       x.end == null))
               .toList();
+
+          // var MicroDTButtonState = 
 
           return MaterialApp(
             home: Scaffold(
@@ -115,7 +130,7 @@ class IssuesDashboard extends StatelessWidget {
                                     pair: dt,
                                     operation: operationMap[dt.operationID]!,
                                     dtType: downtimeTypes[dt.downTimeTypeID]!,
-                                    onTap: microDTOnTap,
+                                    onTap: issueOnTap,
                                   )
                               // DTCard(
                               //   operation:
@@ -204,6 +219,7 @@ class IssuesDashboard extends StatelessWidget {
                           minimumSize: const Size.fromWidth(100),
                           padding: const EdgeInsets.all(10)),
                       onPressed: () {
+                        // downtimeState.reloadDowntimes();
                         int totalSec = microDowntimes.fold(0, (sum, x) => sum + x.activeTime);
                         String title = 'Total micro downtimes: ${microDowntimes.length} ($totalSec sec)';
                         Navigator.push(

@@ -1,10 +1,21 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:global_configuration/global_configuration.dart';
+import 'package:http/http.dart' as http;
+
+final apiBaseURL = GlobalConfiguration().getValue("apiBaseURL");
 
 class AppState extends ChangeNotifier {
+  Map<String, dynamic> srvSettings = <String, dynamic>{};
   var current = WordPair.random();
   var history = <WordPair>[];
   // var pageDowntimesListCount = 0;
+
+  AppState(){
+    fetchSRVSettings().then((value) => srvSettings = value);
+  }
 
   GlobalKey? historyListKey;
 
@@ -39,5 +50,26 @@ class AppState extends ChangeNotifier {
   //     notifyListeners();
   //   }
   // }
+
+}
+
+Future<Map<String, dynamic>> fetchSRVSettings() async {
+  final uri = '$apiBaseURL/OPDSettings/ServerSettings';
+
+  try{
+
+  final response = await http.get(Uri.parse(uri));
+
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    // If the server did not return a 200 OK response, then throw an exception.
+    throw Exception('Failed to load Server settings');
+  }
+  }
+  catch(e){
+    print(e);
+    rethrow;
+  }
 
 }
