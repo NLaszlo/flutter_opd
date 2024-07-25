@@ -1,16 +1,22 @@
-# flutter_opd
+# Introduction 
+This project is an implementation of the PET OPD system in flutter. 
 
-PET OPD 2 project in flutter.
+# Getting Started
+Dependencies: 
+1. Visual studio code, 
+2. [Flutter framework](https://codelabs.developers.google.com/codelabs/flutter-codelab-first#0)
 
-## Getting Started
+Running
+1. Right click in folder and click on Open with code
+2. Press Ctrl + F5
 
-This project is a starting point for a Flutter application.
+# Build and Test
+TODO: Describe and show how to build your code and run the tests. 
 
-A few resources to get you started if this is your first Flutter project:
+# Contribute
+TODO: Explain how other users and developers can contribute to make your code better. 
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
+- [ASP.NET Core](https://github.com/aspnet/Home)
+- [Visual Studio Code](https://github.com/Microsoft/vscode)
+- [Chakra Core](https://github.com/Microsoft/ChakraCore)
